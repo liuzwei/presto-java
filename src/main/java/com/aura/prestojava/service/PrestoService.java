@@ -1,9 +1,13 @@
 package com.aura.prestojava.service;
 
+import com.aura.prestojava.bean.AgeQueryVO;
+import com.aura.prestojava.bean.BrandQueryVO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class PrestoService {
@@ -16,7 +20,7 @@ public class PrestoService {
     private static String AGE_PRICE_QUERY="select cast((year(CURRENT_DATE)-year(birth)) as integer) as age,sum(price) as totalPrice from record join user_dimension on record.uid=user_dimension.uid group by cast((year(CURRENT_DATE)-year(birth)) as integer) order by totalPrice desc";
 
 
-    public String selectBrandPrice(){
+    public List<BrandQueryVO> selectBrandPrice(){
         Connection connection = null;
         Statement statement = null;
         try {
@@ -25,11 +29,59 @@ public class PrestoService {
 
             ResultSet resultSet = statement.executeQuery(BRAND_PRICE_QUERY);
 
+            List<BrandQueryVO> list = new ArrayList<>();
             while (resultSet.next()){
-                System.out.println(resultSet);
+                BrandQueryVO vo = new BrandQueryVO();
+                vo.setBrand(resultSet.getString("brand"));
+                vo.setTotalPrice(resultSet.getLong("totalPrice"));
+                list.add(vo);
+                System.out.println(vo.toString());
             }
 
             resultSet.close();
+            return list;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                if (!statement.isClosed()){
+                    statement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (connection.isClosed()){
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+
+    public List<AgeQueryVO> selectAgePrice(){
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = DriverManager.getConnection(prestoUrl, "liu", null);
+            statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery(AGE_PRICE_QUERY);
+
+            List<AgeQueryVO> list = new ArrayList<>();
+            while (resultSet.next()){
+                AgeQueryVO vo = new AgeQueryVO();
+                vo.setAge(resultSet.getInt("age"));
+                vo.setTotalPrice(resultSet.getLong("totalPrice"));
+                list.add(vo);
+                System.out.println(vo.toString());
+            }
+
+            resultSet.close();
+            return list;
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {

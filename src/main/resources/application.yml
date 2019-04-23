@@ -5,4 +5,4 @@ spring:
     name: presto-app
 
 presto:
-  url: "jdbc:presto://hadoop:8081/hive/loganalysis"
+  url: "jdbc:presto://10.0.0.60:8081/hive/loganalysis"
