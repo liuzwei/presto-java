@@ -24,12 +24,15 @@ public class PrestoService {
         Connection connection = null;
         Statement statement = null;
         try {
+            // 获得连接
             connection = DriverManager.getConnection(prestoUrl, "liu", null);
             statement = connection.createStatement();
 
+            //执行语句返回结果
             ResultSet resultSet = statement.executeQuery(BRAND_PRICE_QUERY);
 
             List<BrandQueryVO> list = new ArrayList<>();
+            // 遍历结果集
             while (resultSet.next()){
                 BrandQueryVO vo = new BrandQueryVO();
                 vo.setBrand(resultSet.getString("brand"));
