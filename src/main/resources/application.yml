@@ -1,0 +1,8 @@
+server:
+  port: 8099
+spring:
+  application:
+    name: presto-app
+
+presto:
+  url: "jdbc:presto://hadoop:8081/hive/loganalysis"
